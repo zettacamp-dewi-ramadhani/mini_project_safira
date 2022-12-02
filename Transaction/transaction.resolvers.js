@@ -327,7 +327,7 @@ const cancelOrder = async (userId, time) => {
   });
   if(data != null){
     let hour;
-    let minute = time.getMinutes() + 5;
+    let minute = time.getMinutes() + 1;
     if(minute > 59){
       hour = time.getHours()+1;
       minute = minute-59;
