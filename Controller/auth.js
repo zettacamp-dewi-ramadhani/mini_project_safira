@@ -21,7 +21,7 @@ const authJwt = async(resolver,parent, args, ctx,info)=>{
 module.exports = {
   Query: {
     getAllUsers: authJwt,
-    getOneUser: authJwt,
+    // getOneUser: authJwt,
     getAllIngredients: authJwt,
     getOneIngredient: authJwt,
     // getAllRecipes : authJwt,
