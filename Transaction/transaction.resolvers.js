@@ -581,10 +581,148 @@ const updateAmount = async (parent, { input }, ctx) => {
   }
 };
 
+const getIncome = async (parent, aggregate, ctx) => {
+  let income = await Transaction.aggregate([
+    {
+      $match: {
+        $and: [
+          {
+            order_status: "success",
+            status: "active"
+          }
+        ]
+      }
+    },
+    {
+      $addFields: {
+        sold: {
+          $add: [
+            {
+              $sum: "$menu.amount"
+            }
+          ]
+        }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        balance: {
+          $sum: "$total"
+        },
+        count: {
+          $sum: 1
+        },
+        sold: {
+          $sum: "$sold"
+        }
+      }
+    }
+  ]);
+  return {
+    count: income[0].count,
+    sold: income[0].sold,
+    balance: income[0].balance
+  };
+};
+
+const getSuccessTransactions = async (parent, { pagination }, ctx) => {
+  let aggregateQuery = [];
+  let matchQuerry = {
+    $and: [
+      {
+        order_status: "success",
+        status: "active"
+      }
+    ]
+  };
+
+  let totalCount = await Transaction.count();
+
+  if (matchQuerry.$and.length) {
+    aggregateQuery.push(
+      {
+        $match: matchQuerry
+      },
+      {
+        $sort: {
+          order_date: -1
+        }
+      },
+      {
+        $addFields: {
+          sold: {
+            $add: [
+              {
+                $sum: "$menu.amount"
+              }
+            ]
+          }
+        }
+      }
+    );
+    let updateCount = await Transaction.aggregate(aggregateQuery);
+    totalCount = updateCount.length;
+  }
+  if (pagination) {
+    const { limit, page } = pagination;
+    aggregateQuery.push(
+      {
+        $skip: page * limit
+      },
+      {
+        $limit: limit
+      },
+      {
+        $sort: {
+          order_date: -1
+        }
+      },
+      {
+        $addFields: {
+          sold: {
+            $add: [
+              {
+                $sum: "$menu.amount"
+              }
+            ]
+          }
+        }
+      }
+    );
+  }
+
+  if (!aggregateQuery.length) {
+    let result = await Transaction.find().lean();
+    result = result.map(el => {
+      return {
+        ...el,
+        count: result.length,
+        total_docs: totalCount
+        // sold : soldAmount[0].sold
+      };
+    });
+    return result;
+  }
+
+  let result = await Transaction.aggregate(aggregateQuery);
+  result = result.map(el => {
+    return {
+      ...el,
+      count: result.length,
+      total_docs: totalCount
+      // sold : soldAmount[0].sold
+    };
+  });
+  return result;
+};
+
 const TransactionResolvers = {
   Query: {
     getAllTransactions,
-    getOneTransactions
+    getOneTransactions,
+    getIncome,
+    getSuccessTransactions
   },
 
   Mutation: {
