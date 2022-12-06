@@ -77,8 +77,7 @@ const login = async (parent, {input : {email, password}})=>{
             throw new Error('Login Error');
         }else if(user && decryptedPass){
             const token = jwt.sign({
-                id : user._id,
-                email : user.email
+                id : user._id
             },tokenSecret,{
                 expiresIn : '12h'
             });
