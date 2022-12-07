@@ -1,5 +1,6 @@
-const {db, mongoose} = require('../Controller/database')
+const { db, mongoose } = require("../Controller/database");
 
+// create schema for database
 const recipeSchema = new mongoose.Schema({
   recipe_name: {
     type: String,
@@ -23,11 +24,15 @@ const recipeSchema = new mongoose.Schema({
     enum: ["active", "deleted", "draft"],
     default: "draft"
   },
-  special_offers :{
+  discount: {
+    type: Number,
+    default: 0
+  },
+  special_offers: {
     type: Boolean,
     default: false
   },
-  highlight :{
+  highlight: {
     type: Boolean,
     default: false
   },
@@ -37,5 +42,6 @@ const recipeSchema = new mongoose.Schema({
   }
 });
 
-const Recipe = mongoose.model('recipes', recipeSchema);
+// create model from schema and database
+const Recipe = mongoose.model("recipes", recipeSchema);
 module.exports = Recipe;
