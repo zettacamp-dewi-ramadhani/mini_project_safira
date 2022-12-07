@@ -78,6 +78,10 @@ const UserTypeDefs = gql`
     password: String
   }
 
+  input TopUp {
+    balance: Int
+  }
+
   type Query {
     getAllUsers(filter: UserFilter, paging: Paging): [Users]
     getOneUser(filter: OneUserFilter): Users
@@ -89,6 +93,7 @@ const UserTypeDefs = gql`
     updateUser(input: UserUpdate): Users
     deleteUser(input: UserDelete): Users
     forgetPass(input: ForgetPass): Users
+    topUp(input: TopUp): Users
   }
 `;
 
