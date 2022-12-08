@@ -55,7 +55,6 @@ const RecipeTypeDefs = gql`
 
   input DataUpdateRecipe {
     id: ID
-    newName: String
     newIngredient: [DetailIngredientForRecipe]
     price: Int
     image: String

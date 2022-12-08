@@ -1,44 +1,62 @@
 const Ingredient = require("./ingredient.model");
 const Recipe = require("../Recipe/recipe.model");
 
+// insert new ingredient data
 const insertIngredient = async (parent, { input }) => {
   if (!input) {
+    // no input
     throw new Error("Nothing to insert");
   } else {
     const { name, stock } = input;
+    // verify data already exists by name
     const dataName = new RegExp(name, "i");
     const verify = await Ingredient.findOne({ name: dataName });
-    if (verify) {
+
+    if (verify != null) {
+      // the data already exist by name
       throw new Error("Ingredient has been include");
     } else {
-      let data = new Ingredient({
-        name: name,
-        stock: stock
-      });
-      await data.save();
-      return data;
+      if (stock < 0) {
+        throw new Error("Can't put stock below then 0");
+      } else {
+        let data = new Ingredient({
+          name: name,
+          stock: stock
+        });
+        // save data
+        await data.save();
+        return data;
+      }
     }
   }
 };
 
+// show all ingredient data
 const getAllIngredients = async (parent, { filter, paging }) => {
+  // array variable to save any query for aggregate
   let aggregateQuery = [
     {
+      // default sort descanding
       $sort: {
         created_at: -1
       }
     }
   ];
+
+  // array variable to save any match aggregate
   let matchQuerry = {
     $and: [
+      // default match
       {
         status: "active"
       }
     ]
   };
 
+  // count data for pagination
   let count = await Ingredient.count();
 
+  // if any filter input
   if (filter) {
     if (filter.name) {
       const search = new RegExp(filter.name, "i");
@@ -60,20 +78,22 @@ const getAllIngredients = async (parent, { filter, paging }) => {
     }
   }
 
+  // push match query
   if (matchQuerry.$and.length) {
-    aggregateQuery.push(
-      {
-        $match: matchQuerry
-      }
-    );
+    aggregateQuery.push({
+      $match: matchQuerry
+    });
+    // update count data after push array
     let updateCount = await Ingredient.aggregate(aggregateQuery);
-    count = updateCount.length
+    count = updateCount.length;
   }
 
+  // if any pagination input
   if (paging) {
     const { limit, page } = paging;
     aggregateQuery.push(
       {
+        // default sort descanding
         $sort: {
           created_at: -1
         }
@@ -87,6 +107,7 @@ const getAllIngredients = async (parent, { filter, paging }) => {
     );
   }
 
+  // no argument
   if (!aggregateQuery.length) {
     let result = await Ingredient.find();
     return result;
@@ -101,6 +122,7 @@ const getAllIngredients = async (parent, { filter, paging }) => {
   return result;
 };
 
+// show one/detail ingredient data by id
 const getOneIngredient = async (parent, { filter }) => {
   if (!filter) {
     throw new Error("Nothing to show");
@@ -114,28 +136,34 @@ const getOneIngredient = async (parent, { filter }) => {
   }
 };
 
+// update stock ingredient
 const updateIngredient = async (parent, { input }) => {
   if (!input) {
     throw new Error("Nothing to update");
   } else {
     const { id, newStock } = input;
-    let data = await Ingredient.findByIdAndUpdate(
-      {
-        _id: id
-      },
-      {
-        $set: {
-          stock: newStock
+    if (newStock < 0) {
+      throw new Error("Can't put stock below then 0");
+    } else {
+      let data = await Ingredient.findByIdAndUpdate(
+        {
+          _id: id
+        },
+        {
+          $set: {
+            stock: newStock
+          }
+        },
+        {
+          new: true
         }
-      },
-      {
-        new: true
-      }
-    );
-    return data;
+      );
+      return data;
+    }
   }
 };
 
+// check if ingredient connected / existed in any recipe by id
 const validateDelete = async id => {
   const result = await Recipe.find({
     "ingredients.ingredient_id": id
@@ -143,11 +171,13 @@ const validateDelete = async id => {
   return result;
 };
 
+// delete ingredient
 const deleteIngredient = async (parent, { input }, ctx) => {
   if (!input) {
     throw new Error("Input the data first");
   } else {
     const { id } = input;
+    // check ingredent in recipe
     const validate = await validateDelete(id);
     if (validate == 0) {
       let result = await Ingredient.findByIdAndUpdate(
@@ -169,6 +199,7 @@ const deleteIngredient = async (parent, { input }, ctx) => {
     }
   }
 };
+
 const IngredientResolvers = {
   Query: {
     getAllIngredients,
