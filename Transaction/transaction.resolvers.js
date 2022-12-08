@@ -415,11 +415,7 @@ const cancelOrder = async (userId, time) => {
   }
 };
 
-const getAllTransactions = async (
-  parent,
-  { filter, pagination, order_status },
-  ctx
-) => {
+const getAllTransactions = async (parent, { filter, pagination, order_status },ctx) => {
   const userId = ctx.user[0]._id;
   let aggregateQuery = [];
   let matchQuerry = {
@@ -490,19 +486,9 @@ const getAllTransactions = async (
   let totalCount = await Transaction.count();
 
   if (matchQuerry.$and.length) {
-    aggregateQuery.push({
-      $match: matchQuerry
-    });
-    let updateCount = await Transaction.aggregate(aggregateQuery);
-    totalCount = updateCount.length;
-  }
-
-  if (order_status) {
     aggregateQuery.push(
       {
-        $match: {
-          order_status: order_status
-        }
+        $match: matchQuerry
       },
       {
         $sort: {
