@@ -233,6 +233,7 @@ const updateRecipe = async (parent, { input }) => {
   } else {
     const {
       id,
+      newName,
       newIngredient,
       price,
       image,
@@ -252,6 +253,7 @@ const updateRecipe = async (parent, { input }) => {
         },
         {
           $set: {
+            recipe_name: newName,
             ingredients: newIngredient,
             price: price,
             image: image,
