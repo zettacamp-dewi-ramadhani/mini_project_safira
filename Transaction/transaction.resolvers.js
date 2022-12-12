@@ -415,7 +415,11 @@ const cancelOrder = async (userId, time) => {
   }
 };
 
-const getAllTransactions = async (parent, { filter, pagination, order_status },ctx) => {
+const getAllTransactions = async (
+  parent,
+  { filter, pagination, order_status },
+  ctx
+) => {
   const userId = ctx.user[0]._id;
   let aggregateQuery = [];
   let matchQuerry = {
@@ -790,8 +794,7 @@ const TransactionResolvers = {
     deleteTransaction,
     deleteMenu,
     updateOrderStatus,
-    updateAmount,
-    cancelOrder
+    updateAmount
   },
 
   Transactions: {
