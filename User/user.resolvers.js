@@ -323,20 +323,24 @@ const topUp = async (parent, { input }, ctx) => {
     throw new Error("No data input");
   } else {
     const userId = ctx.user[0]._id;
-    const topUpWallet = await User.findByIdAndUpdate(
-      {
-        _id: userId
-      },
-      {
-        $inc: {
-          wallet: balance
+    if (balance <= 0) {
+      throw new Error("Cant topup below 0");
+    } else {
+      const topUpWallet = await User.findByIdAndUpdate(
+        {
+          _id: userId
+        },
+        {
+          $inc: {
+            wallet: balance
+          }
+        },
+        {
+          new: true
         }
-      },
-      {
-        new: true
-      }
-    );
-    return topUpWallet;
+      );
+      return topUpWallet;
+    }
   }
 };
 
