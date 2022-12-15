@@ -511,6 +511,11 @@ const getAllTransactions = async (
       },
       {
         $limit: limit
+      },
+      {
+        $sort: {
+          order_date: -1
+        }
       }
     );
   }

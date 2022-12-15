@@ -17,7 +17,11 @@ const recipeSchema = new mongoose.Schema({
     }
   ],
   price: { type: Number },
-  image: { type: String },
+  image: {
+    type: String,
+    default:
+      "https://th.bing.com/th/id/R.855e8ca01684f0d61e302ba09a177bfd?rik=TbKuqNR1U%2bV6Iw&riu=http%3a%2f%2fwww.fremontgurdwara.org%2fwp-content%2fuploads%2f2020%2f06%2fno-image-icon-2.png&ehk=CSKwfMp5gN3Q7qhs6urcmM7WX1EHsd%2f3sCS8jJu8lRU%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"
+  },
   available: { type: Number },
   status: {
     type: String,
