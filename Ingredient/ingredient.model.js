@@ -1,6 +1,6 @@
-const {db, mongoose} = require('../Controller/database');
-const moment = require('moment')
+const { mongoose } = require("../Middleware/database");
 
+// create schema for database
 const ingredientSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -18,5 +18,6 @@ const ingredientSchema = new mongoose.Schema({
   }
 });
 
-const Ingredient = mongoose.model('ingredients', ingredientSchema);
+// create model from schema and database
+const Ingredient = mongoose.model("ingredients", ingredientSchema);
 module.exports = Ingredient;

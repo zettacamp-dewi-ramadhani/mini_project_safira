@@ -1,4 +1,4 @@
-const { db, mongoose } = require("../Controller/database");
+const { mongoose } = require("../Middleware/database");
 
 // create schema for database
 const recipeSchema = new mongoose.Schema({
