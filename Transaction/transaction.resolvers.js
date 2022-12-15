@@ -495,7 +495,7 @@ const getAllTransactions = async (
       },
       {
         $sort: {
-          order_date: -1
+          created_at: -1
         }
       }
     );
@@ -514,7 +514,7 @@ const getAllTransactions = async (
       },
       {
         $sort: {
-          order_date: -1
+          created_at: -1
         }
       }
     );
@@ -725,7 +725,7 @@ const getSuccessTransactions = async (parent, { pagination }, ctx) => {
       },
       {
         $sort: {
-          order_date: -1
+          created_at: -1
         }
       },
       {
@@ -754,7 +754,7 @@ const getSuccessTransactions = async (parent, { pagination }, ctx) => {
       },
       {
         $sort: {
-          order_date: -1
+          created_at: -1
         }
       },
       {
