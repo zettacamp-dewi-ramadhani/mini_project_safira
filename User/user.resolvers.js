@@ -225,19 +225,34 @@ const getOneUser = async (parent, { filter }) => {
 };
 
 const updateUser = async (parent, { input }, ctx) => {
+  const map = new Map();
+  const updateQuery = {};
+  const userId = ctx.user[0]._id;
+
   if (!input) {
     throw new Error("No data to update");
   } else {
-    const { newEmail, newPassword, newFirst_name, newLast_name } = input;
-    const userId = ctx.user[0]._id;
-    const encryptedPass = await bcrypt.hash(newPassword, 10);
+    if (input.newEmail) {
+      map.set("email", input.newEmail);
+    }
+    if (input.newPassword) {
+      const encryptedPass = await bcrypt.hash(input.newPassword, 10);
+      map.set("password", encryptedPass);
+    }
+    if (input.newFirst_name) {
+      map.set("first_name", input.newFirst_name);
+    }
+    if (input.newLast_name) {
+      map.set("last_name", input.newLast_name);
+    }
+
+    map.forEach((value, field) => {
+      updateQuery[field] = value;
+    });
     let data = await User.findByIdAndUpdate(
       userId,
       {
-        email: newEmail,
-        password: encryptedPass,
-        first_name: newFirst_name,
-        last_name: newLast_name
+        $set: updateQuery
       },
       {
         new: true

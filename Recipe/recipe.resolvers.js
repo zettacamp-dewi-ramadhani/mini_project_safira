@@ -231,44 +231,59 @@ const updateRecipe = async (parent, { input }) => {
   if (!input) {
     throw new Error("No data");
   } else {
-    const {
-      id,
-      newName,
-      newIngredient,
-      price,
-      image,
-      status,
-      discount,
-      special,
-      highlight
-    } = input;
-    if (price <= 0) {
-      throw new Error("Price can't 0 or below 0");
-    } else if (discount < 0) {
-      throw new Error("discount can't below then 0");
-    } else {
-      let data = await Recipe.findByIdAndUpdate(
-        {
-          _id: id
-        },
-        {
-          $set: {
-            recipe_name: newName,
-            ingredients: newIngredient,
-            price: price,
-            image: image,
-            status: status,
-            discount: discount,
-            special_offers: special,
-            highlight: highlight
-          }
-        },
-        {
-          new: true
-        }
-      );
-      return data;
+    const map = new Map();
+    const updateQuery = {};
+    if (input.newName) {
+      map.set("recipe_name", input.newName);
     }
+    if (input.newIngredient) {
+      map.set("ingredients", input.newIngredient);
+    }
+    if (input.price) {
+      if (input.price <= 0) {
+        throw new Error("Price can't 0 or below 0");
+      } else {
+        map.set("price", input.price);
+      }
+    }
+    if (input.image) {
+      map.set("image", input.image);
+    }
+    if (input.status) {
+      map.set("status", input.status);
+    }
+    if (input.discount) {
+      if (input.discount < 0) {
+        throw new Error("discount can't below then 0");
+      } else {
+        map.set("discount", input.discount);
+      }
+    }
+    if (input.special == true) {
+      map.set("special_offers", input.special);
+    } else {
+      map.set("special_offers", false);
+    }
+    if (input.highlight == true) {
+      map.set("highlight", input.highlight);
+    } else {
+      map.set("highlight", false);
+    }
+
+    map.forEach((value, field) => {
+      updateQuery[field] = value;
+    });
+
+    const result = await Recipe.findByIdAndUpdate(
+      input.id,
+      {
+        $set: updateQuery
+      },
+      {
+        new: true
+      }
+    );
+    return result;
   }
 };
 const deleteRecipe = async (parent, { input }) => {
